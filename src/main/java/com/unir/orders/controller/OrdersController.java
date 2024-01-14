@@ -1,31 +1,58 @@
 package com.unir.orders.controller;
 
+import com.unir.orders.model.db.Order;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.unir.orders.model.request.OrderRequest;
 import com.unir.orders.service.OrdersService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class OrdersController {
 
-	private final OrdersService service;
+    private final OrdersService service; //Inyeccion por constructor mediante @RequiredArgsConstructor. Y, también es inyección por interfaz.
 
-	@PostMapping("/orders")
-	public ResponseEntity<String> createOrder(@RequestBody OrderRequest request) {
+    @PostMapping("/orders")
+    public ResponseEntity<Order> createOrder(@RequestBody @Valid OrderRequest request) { //Se valida con Jakarta Validation API
 
-	  String result = service.createOrder(request);
-	  
-	  if(request != null && "OK".equals(result)) {
-	    return ResponseEntity.ok(result);
-	  } else {
-	    return ResponseEntity.badRequest().build();
-	  }
-		
-	}
+        log.info("Creating order...");
+        Order created = service.createOrder(request);
+
+        if (created != null) {
+            return ResponseEntity.ok(created);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<List<Order>> getOrders() {
+
+        List<Order> orders = service.getOrders();
+        if (orders != null) {
+            return ResponseEntity.ok(orders);
+        } else {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<Order> getOrder(@PathVariable String id) {
+
+        Order order = service.getOrder(id);
+        if (order != null) {
+            return ResponseEntity.ok(order);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

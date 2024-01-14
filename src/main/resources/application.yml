@@ -1,7 +1,9 @@
 ## Configuracion de Instancia
 server:
   port: 8082
-  
+  error:
+    include-stacktrace: on_param
+
 ## Configuracion del cliente de Eureka
 eureka:
   client:
