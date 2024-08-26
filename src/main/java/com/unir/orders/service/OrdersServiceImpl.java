@@ -27,7 +27,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     List<Product> products = request.getProducts().stream().map(productsFacade::getProduct).filter(Objects::nonNull).toList();
 
-    if(products.size() != request.getProducts().size() || products.stream().anyMatch(product -> !product.getVisible())) {
+    if(products.size() != request.getProducts().size()) {
       return null;
     } else {
       Order order = Order.builder().products(products.stream().map(Product::getId).collect(Collectors.toList())).build();
